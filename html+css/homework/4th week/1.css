@@ -1,0 +1,59 @@
+*{
+    padding:0;
+    margin: 0;
+}
+.cont{
+    width: 1140px;
+    margin: 20px auto;
+}
+.color{
+    color: #51bcff;
+    height: 45px;
+}
+.big{
+    font-size: 30px;
+    font-weight: bold;
+}
+.more{
+    background: #343434;
+    color: #fff;
+}
+.list img{
+    margin-top: 10px;
+    height: 203px;
+    width: 215px;
+    margin-left: 11px;
+    border:1px silver solid;
+    text-align: center;
+}
+p{
+    padding: 0 10px;
+    height: 40px;
+    line-height: 40px;
+}
+.price{
+    color:#ff0c2a;
+    float: left;
+}
+.e-book{
+    display: inline-block;
+    height: 26px;
+    line-height: 26px;
+    margin: 10px 0;
+    color: #fff;
+    background: #ff0c2a;
+    font-size: 12px;
+    padding: 0 4px;
+    float: right;
+}
+a{
+    float: right;
+    line-height: 40px;
+}
+.video-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    justify-content: space-between;
+    flex: 1;
+}
+
