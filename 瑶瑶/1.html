@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <!--    自适应屏幕，方便手机与电脑一起用-->
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title ></title>
+  <link rel="shortcut icon" href="./img/aixin.png" type="text/png"/>
+  <style>
+      body{/*网上找的链接地址，可能失效就要改了*/
+          background-image: url("https://i.hexuexiao.cn/up/01/ac/24/19f433960fe7fcfa86ed236e0324ac01.jpg.300.jpg");
+          color: #f180c4;
+      }
+      canvas{
+          position:fixed;
+          top: 0;
+          right: 0;
+          width: 100%;
+          height: 100%;
+      }
+      p{
+          color: #9cbdff;
+          font-size:1rem;
+          line-height: 1.5em;
+      }
+      #loved{
+
+          text-align: center;
+          color: #ffccde;
+      }
+      #qinghua{
+          color: #ff98eb;
+          font:1rem  "新宋体";
+          width: 100%;
+          text-align: center;
+          line-height: 1.99em;
+      }
+      .aini{
+          position: fixed;
+          /*    width: 10rem;
+              height: 2rem;*/
+          top: 0;
+          left: 0;
+          color: #ebd3ff;
+          border: #ff000d solid 0.2em;
+      }
+      .yyue{
+          /*会停留在页面底部，不会随着滑动而动*/
+          /*position: sticky;*/
+          /*相对窗口固定*/
+          position:fixed;
+          bottom: 0;
+          right: 0;
+          width: 50%;
+          height: 2rem;
+      }
+  </style>
+</head>
+<body>
+
+<canvas></canvas> <!--canvas 画布-->
+
+<!--对XX说的情话-->
+<p id="qinghua"></p>
+<p class="aini">
+  xxxx固定在屏幕左上角可以写些东西
+</p>
+<h3 id="loved"></h3>
+<audio class="yyue" src="http://music.163.com/song/media/outer/url?id=4875075.mp3
+ " controls="controls" autoplay="autoplay"></audio>
+<p>任何事物与时间相比都是比不了的，唯有爱是可以的，虽然能与时间相比的爱是少数，但是任何一个时代都不会缺乏真爱。
+</p>
+<!--记录器-->
+<script>
+    var canvas = document.querySelector("canvas"),
+        ctx = canvas.getContext("2d");
+
+    var ww,wh;
+
+    function onResize(){
+        ww = canvas.width = window.innerWidth;
+        wh = canvas.height = window.innerHeight;
+    }
+
+    ctx.strokeStyle = "red";
+    ctx.shadowBlur = 25;
+    ctx.shadowColor = "hsla(0, 100%, 60%,0.5)";
+
+    var precision = 100;
+    var hearts = [];
+    var mouseMoved = false;
+    function onMove(e){
+        mouseMoved = true;
+        if(e.type === "touchmove"){
+            hearts.push(new Heart(e.touches[0].clientX, e.touches[0].clientY));
+            hearts.push(new Heart(e.touches[0].clientX, e.touches[0].clientY));
+        }
+        else{
+            hearts.push(new Heart(e.clientX, e.clientY));
+            hearts.push(new Heart(e.clientX, e.clientY));
+        }
+    }
+
+    var Heart = function(x,y){
+        this.x = x || Math.random()*ww;
+        this.y = y || Math.random()*wh;
+        this.size = Math.random()*2 + 1;
+        this.shadowBlur = Math.random() * 10;
+        this.speedX = (Math.random()+0.2-0.6) * 8;
+        this.speedY = (Math.random()+0.2-0.6) * 8;
+        this.speedSize = Math.random()*0.05 + 0.01;
+        this.opacity = 1;
+        this.vertices = [];
+        for (var i = 0; i < precision; i++) {
+            var step = (i / precision - 0.5) * (Math.PI * 2);
+            var vector = {
+                x : (15 * Math.pow(Math.sin(step), 3)),
+                y : -(13 * Math.cos(step) - 5 * Math.cos(2 * step) - 2 * Math.cos(3 * step) - Math.cos(4 * step))
+            }
+            this.vertices.push(vector);
+        }
+    }
+
+    Heart.prototype.draw = function(){
+        this.size -= this.speedSize;
+        this.x += this.speedX;
+        this.y += this.speedY;
+        ctx.save();
+        ctx.translate(-1000,this.y);
+        ctx.scale(this.size, this.size);
+        ctx.beginPath();
+        for (var i = 0; i < precision; i++) {
+            var vector = this.vertices[i];
+            ctx.lineTo(vector.x, vector.y);
+        }
+        ctx.globalAlpha = this.size;
+        ctx.shadowBlur = Math.round((3 - this.size) * 10);
+        ctx.shadowColor = "hsla(0, 100%, 60%,0.5)";
+        ctx.shadowOffsetX = this.x + 1000;
+        ctx.globalCompositeOperation = "screen"
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+    };
+
+
+    function render(a){
+        requestAnimationFrame(render);
+
+        hearts.push(new Heart())
+        ctx.clearRect(0,0,ww,wh);
+        for (var i = 0; i < hearts.length; i++) {
+            hearts[i].draw();
+            if(hearts[i].size <= 0){
+                hearts.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+
+    onResize();
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("touchmove", onMove);
+    window.addEventListener("resize", onResize);
+    requestAnimationFrame(render);
+
+    // window.onload=function starttime(){
+    function starttime(){
+        time(document.getElementById("loved"),'2021,12,12');     // 在一起的时间
+        setTimeout(starttime,1000); // 添加计时器
+    }
+    //开始记录（计时器）
+    starttime();
+
+    function time(obj,futimg){
+        var nowtime = new Date().getTime(); // 现在时间转换为时间戳
+        var futruetime =  new Date(futimg).getTime(); // 未来时间转换为时间戳
+        var msec = nowtime-futruetime; // 毫秒 未来时间-现在时间
+        var time = (msec/1000);  // 毫秒/1000
+        var day = parseInt(time/86400); // 天  24*60*60*1000
+        var hour = parseInt(time/3600)-24*day;    // 小时 60*60 总小时数-过去的小时数=现在的小时数
+        var minute = parseInt(time%3600/60); // 分 -(day*24) 以60秒为一整份 取余 剩下秒数 秒数/60 就是分钟数
+        var second = parseInt(time%60);  // 以60秒为一整份 取余 剩下秒数
+        obj.innerHTML="正式相恋于2021年12月12日<br>不知不觉，咱俩在一起的时间已经：<br>"+day+"天"+hour+"小时"+minute+"分"+second+"秒"+
+            "了<br><span>一时间不知道从哪说起,总之我们一定会白头偕老<br>不管面临多大的压力,不管前面的路如何崎岖." +
+            "<br>不管经历过什么,我仍坚信最浪漫的事就是和你一起慢慢变老.<br>相信中间的计时器,将永远记录下去,直至我们一起去往下一个世界，用那个世界的时间来记录我们的每一分每一秒。</span>"
+        return true;
+    }
+</script>
+<!--一个一个字的效果-->
+<script>
+    var str ='晴天，阴天，下雨天，都不及和你聊天。<br/>' +
+        '第一次遇到你，上帝就在我耳边说了四个字：在劫难逃!<br/>' +
+        '如果你愿意，我想牵着你的手，走到生命尽头。<br/>' +
+        '我不喜欢夏天，但我喜欢有你的夏天<br/>' +
+        '给不了你太多感动，但是我会陪你很久很久<br/>' +
+        '宝，我下单了，没有你的孤单<br/>' +
+        '路边的广告牌有一个字，是你的名字<br/>' +
+        '好想从现在开始抱着你，紧紧的抱着你，一直走到上帝面前…<br/>' +
+        '我最近老是犯困，去看了一下医生，他说是为你所困<br/>' +
+        '我不仰慕前世，也不期盼来生，我只求这辈子与你携手此生！<br/>' +
+        '你的酒窝没有酒，我却醉的像条狗。<br/>' +
+        '对视过后，我在你眼中看到了往后余生。<br/>' +
+        '我看起来很温柔，其实我只对你低过头<br/>' +
+        '我这个做事拖拖拉拉，唯一高效的一次，是初次见面就喜欢你<br/>' +
+        '喜欢不是一件浪漫的事，喜欢你才是<br/>' +
+        '第一次见到你，我就知道我栽了。<br/>' +
+        '我帮你点了外卖，有点可乐，有点薯条，有点想你<br/>' +
+        '看你躺在我怀里，开心的样子，就是我想要的幸福。<br/>' +
+        '你愿不愿你带我回家当你的生活必须品<br/>' +
+        '我要露出点小马脚来，好让你知道我喜欢你<br/>' +
+        '遇见你的机率，很小，可还是遇见了，真好<br/>' +
+        '千万别跟我客气，早晚都是一个户口本上的人<br/>' +
+        '\n心里有了你，再好的我都不想要!' +
+        '\n因为我喜欢的样子，你都有。❤';
+    var i = 0;
+    function xiex(){
+        var divTyping = document.getElementById('qinghua');
+        if(i<=str.length){
+            divTyping.innerHTML = str.slice(0,i++) + "❤";
+            setTimeout("xiex()",99)
+        }else{
+            divTyping.innerHTML = str;
+        }
+    }
+    xiex();
+</script>
+</body>
+</html>
